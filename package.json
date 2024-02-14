@@ -1,0 +1,22 @@
+{
+  "name": "newlibs2050",
+  "version": "1.0.0",
+  "description": "newlibs2050",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build && tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "react": "^18.2.0",
+    "vite": "^5.1.1",
+    "typescript": "^5.3.3",
+    "@types/react": "^18.2.55"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
+}
