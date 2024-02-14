@@ -26,6 +26,6 @@
     "react": "^18.2.0"
   },
   "publishConfig": {
-    "@avinash2050kumar:registry": "https://npm.pkg.github.com"
+    "newlibs2050": "https://npm.pkg.github.com"
   }
 }
