@@ -1,0 +1,7 @@
+{
+  "watch": ["."],
+  "ignore": ["dist", "node_modules",".git"],
+  "execMap": {
+    "js": "npm run link"
+  }
+}
