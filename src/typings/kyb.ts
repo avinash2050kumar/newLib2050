@@ -6,13 +6,11 @@ import {
   Status,
 } from "./common";
 
-export enum CompanyType {
-  PUBLIC = "public_limited_company",
-  PRIVATE = "private_limited_company",
-}
+export type CompanyType = "public_limited_company" | "private_limited_company";
 
 export interface IKyb {
   _id: string;
+  id?: string;
   // kyb details
   fullName: string;
   contactNumber: string;
@@ -25,9 +23,9 @@ export interface IKyb {
   company_type?: CompanyType;
 
   // kyb credit limit
-  available_credit_limit: number;
-  credit_limit: number;
-  markup: number;
+  available_credit_limit?: number;
+  credit_limit?: number;
+  markup?: number;
   proposed_credit_limit?: number;
   proposed_markup?: number;
 
@@ -56,9 +54,9 @@ export interface IKyb {
   financialStatement?: IFile[];
   addendum?: IFile[];
   formAB?: IFile[];
-
+  created_at?: string;
+  updated_at?: string;
   verification_checks?: Record<string, unknown>; // TODO: add exact type once verificationData type is finalized
-
   partner?: IPartnerSnapshot;
   meta?: { assignee?: string; fi_id?: string };
 }

@@ -1,14 +1,14 @@
 import { IPartnerSnapshot } from "./common";
 
-export enum SMEBusinessType {
-  PARTNERSHIP = "partnership",
-  SOLE_PROPRIETORSHIP = "soleProprietorship",
-  COMPANY = "company",
-  NONE = "none",
-}
+export type SMEBusinessType =
+  | "partnership"
+  | "soleProprietorship"
+  | "company"
+  | "none";
 
 export interface ISMEUser {
   _id: string;
+  id?: string;
   personalDetails: {
     fullName: string;
     gender?: string;
@@ -26,6 +26,6 @@ export interface ISMEUser {
 
   partner?: IPartnerSnapshot;
 
-  created_at?: Date;
-  updated_at?: Date;
+  created_at?: string;
+  updated_at?: string;
 }

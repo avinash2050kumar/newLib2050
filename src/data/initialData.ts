@@ -1,69 +1,69 @@
-import { IBusiness } from "../typings/business";
-import { filterArrays, objectOmit, objectPick } from "../helpers";
+import type { IBusiness } from '../typings/business'
+import { filterArrays, objectOmit, objectPick } from '../helpers'
 
 type businessType =
-  | "general_grocery_kiryana"
-  | "electronics_hardware"
-  | "car_bike_workshop"
-  | "building_taameer"
-  | "fashion_jewelry_garments"
-  | "mobile_load_computer"
-  | "medical_pharmacy"
-  | "other_business";
+	| 'general_grocery_kiryana'
+	| 'electronics_hardware'
+	| 'car_bike_workshop'
+	| 'building_taameer'
+	| 'fashion_jewelry_garments'
+	| 'mobile_load_computer'
+	| 'medical_pharmacy'
+	| 'other_business'
 
 export const CBFS_INITIAL_DATA = {
-  contactNumber: "",
-  businessRole: "admin",
-  business: "",
-  fullName: "",
-  email: "",
-  businessName: "",
-  businessType: "partnership",
-  businessAddress: "",
-  ntn: "",
-  partnerCnic: [],
-  partnershipDeed: [],
-  incorporationCertificate: [],
-  authorityLetter: [],
-};
+	contactNumber: '',
+	businessRole: '',
+	business: '',
+	fullName: '',
+	email: '',
+	businessName: '',
+	businessType: 'partnership',
+	businessAddress: '',
+	ntn: '',
+	partnerCnic: [],
+	partnershipDeed: [],
+	incorporationCertificate: [],
+	authorityLetter: []
+}
 
 export const BusinessType = {
-  partnership: {
-    partnerCnic: [],
-    partnershipDeed: [],
-    incorporationCertificate: [],
-    authorityLetter: [],
-  },
-  company: {
-    directorsResolution: [],
-    memorandumArticlesAssociation: [],
-    boardMemberCnic: [],
-    pocCnic: [],
-    beneficialOwnerCnic: [],
-  },
-  soleProprietorship: {
-    cnicFront: [],
-    cnicBack: [],
-    proprietorshipDeclaration: [],
-    ntnCertificate: [],
-    bankStatement: [],
-  },
-};
+	partnership: {
+		partnerCnic: [],
+		partnershipDeed: [],
+		incorporationCertificate: [],
+		authorityLetter: []
+	},
+	company: {
+		directorsResolution: [],
+		memorandumArticlesAssociation: [],
+		boardMemberCnic: [],
+		pocCnic: [],
+		beneficialOwnerCnic: []
+	},
+	soleProprietorship: {
+		cnicFront: [],
+		cnicBack: [],
+		proprietorshipDeclaration: [],
+		ntnCertificate: [],
+		bankStatement: []
+	}
+}
 
 export const BUSINESS_TYPE = [
-  {
-    name: "Partnership",
-    value: "partnership",
-  },
-  {
-    name: "Company",
-    value: "company",
-  },
-  {
-    name: "Sole Proprietorship",
-    value: "soleProprietorship",
-  },
-  /*{
+	{
+		name: 'Partnership',
+		value: 'partnership'
+	},
+	{
+		name: 'Company',
+		value: 'company'
+	},
+	{
+		name: 'Sole Proprietorship',
+		value: 'soleProprietorship'
+	}
+	/*{
 		name: 'General Grocery Kiryana',
 		value: 'general_grocery_kiryana'
 	},
@@ -95,18 +95,18 @@ export const BUSINESS_TYPE = [
 		name: 'Other Business',
 		value: 'other_business'
 	}*/
-];
+]
 
 export const TRANSACTION_METHOD = [
-  { value: "bank_transfer", label: "Bank Transfer" },
-];
+	{ value: 'bank_transfer', label: 'Bank Transfer' }
+]
 
 export const getRegistrationFormInitialData = (data: IBusiness) => {
-  return {
-    ...data.user.personalDetails,
-    email: data.user.email,
-    contactNumber: data.kyb.contactNumber.replace("+92", ""),
-    ...objectPick(data.kyb, "businessAddress", "ntn"),
-    ...objectOmit(filterArrays(data.kyb), "statuses"),
-  };
-};
+	return {
+		...data.user.personalDetails,
+		email: data.user.email,
+		contactNumber: data.kyb.contactNumber.replace('+92', ''),
+		...objectPick(data.kyb, 'businessAddress', 'ntn'),
+		...objectOmit(filterArrays(data.kyb), 'statuses')
+	}
+}

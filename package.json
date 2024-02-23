@@ -6,6 +6,8 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build && tsc",
     "publish": "npm publish",
@@ -26,18 +28,20 @@
     "@mui/styled-engine-sc": "^5.10.6",
     "@mui/x-date-pickers": "^6.0.0",
     "@types/react": "^18.2.55",
-    "@typescript-eslint/eslint-plugin": "^5.41.0",
-    "@typescript-eslint/parser": "^5.41.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "axios": "^1.6.7",
-    "nodemon": "^3.0.3",
     "browser-image-compression": "^2.0.2",
     "concurrently": "^8.2.2",
-    "eslint": "^7.27.0",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "4.3.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "formik": "^2.4.3",
     "material-ui-popup-state": "^5.0.4",
     "moment": "^2.30.1",
+    "nodemon": "^3.0.3",
     "notistack": "^3.0.0-alpha.11",
     "prettier": "^3.2.5",
     "react": "^18.2.0",
@@ -55,5 +59,16 @@
   },
   "publishConfig": {
     "newlibs2050": "https://npm.pkg.github.com"
-  }
+  },"prettier": {
+  "useTabs": true,
+  "printWidth": 80,
+  "tabWidth": 4,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "jsxBracketSameLine": false,
+  "semi": false,
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "bracketSameLine": false
+}
 }

@@ -7,6 +7,8 @@ type LMSContextProps = {
   TOKEN: string;
   BASE_URL: string;
   axiosInstance: AxiosInstance;
+  EMAIL?: string;
+  setEmail?(email: string): void;
 };
 
 type Props = {
@@ -15,6 +17,7 @@ type Props = {
   base_url: string;
   theme?: "light" | "dark";
   palette?: PaletteOptions;
+  email?: string;
 };
 
 const LMSContext = React.createContext<LMSContextProps>({} as LMSContextProps);
@@ -25,7 +28,9 @@ export const LMSProvider: React.FC<Props> = ({
   base_url,
   theme,
   palette,
+  email,
 }) => {
+  const [userEmail, setUserEmail] = useState(email);
   const [Token, setToken] = useState(token);
 
   const axiosInstance = axios.create({
@@ -40,6 +45,8 @@ export const LMSProvider: React.FC<Props> = ({
       TOKEN: Token,
       BASE_URL: base_url,
       axiosInstance: axiosInstance,
+      EMAIL: email,
+      setEmail: (email: string) => setUserEmail(email),
     };
   }, [token, base_url, axiosInstance]);
 

@@ -1,7 +1,7 @@
 import type { PaletteMode } from "@mui/material";
 import { fontWeights, variants } from "./typography";
 import { breakpoints } from "./breakpoints";
-import type { PaletteOptions } from "@mui/material/styles/createPalette";
+import { PaletteOptions } from "@mui/material/styles/createPalette";
 
 const lightPalette = {
   primary: {
