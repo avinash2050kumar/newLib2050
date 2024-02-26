@@ -2,14 +2,13 @@ import { FlexCol, FlexRow } from '../Flex'
 import { Gutter } from '../Gutter'
 import { Button, Typography, useTheme } from '@mui/material'
 import { IoIosClose } from 'react-icons/io'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { styled } from '@mui/system'
 import { RiErrorWarningLine } from 'react-icons/ri'
 import type { BannerType, IBusiness } from '../../typings/business'
 import { useLMS } from '../../Context'
 import type { BannerDataType } from '../../data/banner'
 import { BANNER_DATA } from '../../data/banner'
-import { useAppErrors } from '../../hooks'
 import { enqueueSnackbar } from 'notistack'
 
 const FinanceContainer = styled(FlexRow)<{ color: any }>`
@@ -69,9 +68,8 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [detail, setDetail] = useState<IBusiness | undefined>(info)
-	const { EMAIL, axiosInstance } = useLMS()
+	const { EMAIL, axiosInstance, userDetail } = useLMS()
 	const theme = useTheme()
-	const { setAppError } = useAppErrors()
 
 	const status = useMemo(() => {
 		let contractUrl, contractValid, reason
@@ -93,18 +91,13 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 		}
 	}, [detail])
 
-	const fetchDetail = useCallback(async () => {
-		try {
-			const { data } = await axiosInstance.get(
-				`/v1/external-lending/sme/users?email=${EMAIL}`
-			)
-			setDetail(data)
-		} catch (e: any) {
-			setAppError(e)
-		} finally {
+	const fetchDetail = () => {
+		if (userDetail === undefined) {
+		} else {
+			setDetail(userDetail)
 			setLoading(false)
 		}
-	}, [EMAIL, axiosInstance, setAppError])
+	}
 
 	useEffect(() => {
 		if (!info && EMAIL) {
@@ -118,8 +111,6 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 			setLoading(false)
 		}
 	}, [EMAIL, fetchDetail, info])
-
-	console.log(';d', status)
 
 	const Render = ({
 		data,
@@ -238,7 +229,7 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 								disabled={!status.contractUrl}
 							/>
 						)}
-					{detail.kyb &&
+					{/*{detail.kyb &&
 						status.contractValid &&
 						status.contractValid?.length > 0 && (
 							<Render
@@ -248,7 +239,7 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 								}
 								color={theme.palette.success}
 							/>
-						)}
+						)}*/}
 					{detail.kyb && detail.kyb.status === 'rejected' && (
 						<Render
 							data={

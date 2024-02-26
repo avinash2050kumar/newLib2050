@@ -23,12 +23,12 @@ export const BANNER_DATA = (description?: string, action?: string) => {
 			actionTitle: action || 'Review and sign contract',
 			type: 'REVIEW_SIGN_CONTRACT'
 		},
-		APPLY_FINANCING: {
+		/*APPLY_FINANCING: {
 			title: 'You have successfully register with OrdrFinance.',
 			description: 'Apply for financing',
 			actionTitle: 'Apply for Financing',
 			type: 'APPLY_FINANCING'
-		},
+		},*/
 		PENDING: {
 			title: "Your submitted business information is currently being verified. We'll get back to you shortly.",
 			description:

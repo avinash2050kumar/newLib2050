@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FlexCol, FlexRow } from '../Flex'
 import { Button, Typography, useTheme } from '@mui/material'
 import { styled } from '@mui/system'
+import type { IBusiness } from '../../typings/business'
+import { useLMS } from '../../Context'
+import { enqueueSnackbar } from 'notistack'
 
 const Header = styled(FlexRow)`
 	width: 100%;
@@ -53,12 +56,38 @@ const Row = styled(FlexCol)`
 
 type SummaryCardProps = {
 	onClick?(): void
+	info?: IBusiness
 }
 
 export const SummaryCard: React.ComponentType<SummaryCardProps> = ({
-	onClick
+	onClick,
+	info
 }) => {
+	const [loading, setLoading] = useState(true)
+	const [detail, setDetail] = useState<IBusiness | undefined>(info)
+	const { EMAIL, axiosInstance, userDetail } = useLMS()
 	const theme = useTheme()
+
+	const fetchDetail = () => {
+		if (userDetail === undefined) {
+		} else {
+			setDetail(userDetail)
+			setLoading(false)
+		}
+	}
+
+	useEffect(() => {
+		if (!info && EMAIL) {
+			fetchDetail()
+		} else if (!EMAIL) {
+			enqueueSnackbar('Email is required', {
+				variant: 'error'
+			})
+		} else {
+			setDetail(info)
+			setLoading(false)
+		}
+	}, [EMAIL, fetchDetail, info])
 
 	return (
 		<Header>
@@ -70,7 +99,7 @@ export const SummaryCard: React.ComponentType<SummaryCardProps> = ({
 					>
 						Active Loans
 					</Typography>
-					<Typography variant={'subtitle2'}>1</Typography>
+					<Typography variant={'subtitle2'}>0</Typography>
 				</Row>
 				<Row align={'flex-start'}>
 					<Typography
@@ -79,7 +108,7 @@ export const SummaryCard: React.ComponentType<SummaryCardProps> = ({
 					>
 						Applications
 					</Typography>
-					<Typography variant={'subtitle2'}>1</Typography>
+					<Typography variant={'subtitle2'}>0</Typography>
 				</Row>
 				<Row align={'flex-start'}>
 					<Typography
@@ -88,7 +117,13 @@ export const SummaryCard: React.ComponentType<SummaryCardProps> = ({
 					>
 						Amount Due
 					</Typography>
-					<Typography variant={'subtitle2'}>PKR 100,000</Typography>
+					<Typography variant={'subtitle2'}>
+						PKR{' '}
+						{`${(
+							(detail?.kyb.credit_limit || 0) -
+							(detail?.kyb.available_credit_limit || 0)
+						).toLocaleString()}`}
+					</Typography>
 				</Row>
 				<CreditLimitWrapper1 align={'flex-start'}>
 					<Typography
@@ -97,7 +132,12 @@ export const SummaryCard: React.ComponentType<SummaryCardProps> = ({
 					>
 						Credit Limit Left
 					</Typography>
-					<Typography variant={'subtitle2'}>PKR 900,000</Typography>
+					<Typography variant={'subtitle2'}>
+						PKR{' '}
+						{(
+							detail?.kyb.available_credit_limit || 0
+						).toLocaleString()}
+					</Typography>
 				</CreditLimitWrapper1>
 			</Wrapper>
 			<StyledButton

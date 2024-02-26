@@ -31,7 +31,6 @@ import { useAppErrors } from '../../hooks'
 import { FieldNumberInput, FieldTextInput } from '../Molecule'
 import { Label } from '../Atoms/Label'
 import { useLMS } from '../../Context'
-import type { IBusiness } from '../../typings/business'
 import { enqueueSnackbar } from 'notistack'
 
 const ITEM_HEIGHT = 48
@@ -194,27 +193,32 @@ const validationSchema = Yup.object().shape({
 
 export const RegisterFinance = () => {
 	const [loading, setLoading] = useState(true)
-	const [detail, setDetails] = useState<IBusiness>()
-	const { axiosInstance, EMAIL } = useLMS()
+	const { axiosInstance, EMAIL, userDetail } = useLMS()
 	const theme = useTheme()
 	const { setAppError } = useAppErrors()
 
 	const initial = useMemo(() => {
-		return detail
-			? getRegistrationFormInitialData(detail)
-			: {
-					...CBFS_INITIAL_DATA,
-					businessName: '',
-					email: '',
-					fullName: '',
-					phone: '',
-					businessAddress: '',
-					business: '',
-					contactNumber: ''
-				}
-	}, [detail])
+		let res
+		if (userDetail === undefined) {
+		} else {
+			res = userDetail.user.id
+				? getRegistrationFormInitialData(userDetail)
+				: {
+						...CBFS_INITIAL_DATA,
+						businessName: '',
+						email: '',
+						fullName: '',
+						phone: '',
+						businessAddress: '',
+						business: '',
+						contactNumber: ''
+					}
+			setLoading(false)
+			return res
+		}
+	}, [userDetail])
 
-	const fetchData = async () => {
+	/*const fetchData = async () => {
 		try {
 			setLoading(true)
 			const { data } = await axiosInstance.get(
@@ -226,14 +230,14 @@ export const RegisterFinance = () => {
 		} finally {
 			setLoading(false)
 		}
-	}
+	}*/
 
 	useEffect(() => {
-		if (EMAIL) {
+		/*if (EMAIL) {
 			fetchData()
 		} else {
 			setLoading(false)
-		}
+		}*/
 	}, [])
 
 	const onSubmit = async (value: any, action: any) => {

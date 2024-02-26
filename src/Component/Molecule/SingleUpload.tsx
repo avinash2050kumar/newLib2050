@@ -7,19 +7,14 @@ import * as Axios from 'axios'
 import { useAppErrors } from '../../hooks'
 import { useField } from 'formik'
 import { useSnackbar } from 'notistack'
-import { CompressImage } from '../../utils'
+import { CompressImage } from '../../utils/image-compression'
 import { uploadADoc } from '../../api'
 import { ImFilePdf } from 'react-icons/im'
-import { ErrorText } from '../Atoms'
-import { Gutter } from '../Gutter'
+import { ErrorText } from '../../Component/Atoms'
+import { Gutter } from '../../Component'
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined'
-import {
-	addOrRemoveArr,
-	getFileExtension,
-	isImageFileExtension
-} from '../../helpers'
+import { getFileExtension, isImageFileExtension } from '../../helpers'
 import { MdCheckCircle, MdDelete } from 'react-icons/md'
-import type { FileDto } from '../../typings/file'
 import { formatFileSize } from '../../helpers/filesize'
 
 const Wrapper = styled(FlexRow)`
@@ -27,10 +22,7 @@ const Wrapper = styled(FlexRow)`
 `
 
 const Delete = styled(MdDelete)<{ disabled?: boolean }>`
-	color: ${({ theme, disabled }) =>
-		disabled ? theme.palette.grey['100'] : theme.palette.text.secondary};
-	width: 22px;
-	height: 22px;
+	color: ${({ theme }) => theme.palette.primary.contrastText};
 
 	:hover {
 		cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
@@ -80,7 +72,7 @@ type Props = {
 	buttonLabel?: string
 }
 
-export const UploadAttachment: React.ComponentType<Props> = ({
+export const SingleUpload: React.ComponentType<Props> = ({
 	disabled,
 	name,
 	title,
@@ -139,14 +131,7 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 								}
 							})
 							.then(() => {
-								helpers.setValue([
-									...meta.value,
-									{
-										name: 'name',
-										size: 2320,
-										resourceURL: data.url
-									}
-								])
+								helpers.setValue(data.url)
 
 								enqueueSnackbar('Upload Successful', {
 									variant: 'success'
@@ -188,16 +173,15 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 	return (
 		<>
 			<Row>
-				<Typography variant={'body2'} fontWeight={500}>
+				<Typography variant={'body1'} fontWeight={400}>
 					{title}
 				</Typography>
 				<Button
 					{...getRootProps()}
 					role={undefined}
 					variant="outlined"
-					size={'small'}
 					tabIndex={-1}
-					startIcon={buttonLabel ? <></> : <UploadFileOutlinedIcon />}
+					startIcon={<UploadFileOutlinedIcon />}
 					disabled={loading || disabled}
 				>
 					<input
@@ -208,69 +192,58 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 					<VisuallyHiddenInput type="file" />
 				</Button>
 			</Row>
+
 			<Gutter spacing={0.5} />
 			<Wrapper>
 				<Flex>
-					{meta.value.map((m: FileDto, i: number) => (
-						<StyledCard variant={'outlined'} key={m.resourceURL}>
-							<Row justify={'space-between'} align={'center'}>
-								<FlexRow>
-									<Box3>
-										{isImage(m.resourceURL) ? (
-											<img
-												width={56}
-												height={56}
-												src={m.resourceURL}
-											/>
-										) : (
-											<ImFilePdf
-												size={56}
-												color={'#FF505F'}
-											/>
-										)}
-									</Box3>
-									<Gutter gap={0.5} />
-									<FlexCol
-										style={{ height: 56 }}
-										justify={'space-between'}
-									>
-										<Typography>{m.name}</Typography>
-										<FlexRow>
-											<Typography variant={'caption'}>
-												{formatFileSize(m.size)}
-											</Typography>
-											<Gutter gap={1} />
-											<Typography variant={'caption'}>
-												Completed
-											</Typography>
-										</FlexRow>
-									</FlexCol>
-								</FlexRow>
-								<FlexRow align={'center'}>
-									<Delete
-										size={22}
-										onClick={() =>
-											helpers.setValue(
-												addOrRemoveArr(meta.value, m)
-											)
-										}
-									/>
-									<Gutter gap={1} />
-									<MdCheckCircle
-										color={'#178D46'}
-										size={30}
-									/>
-								</FlexRow>
-							</Row>
-						</StyledCard>
-					))}
+					<StyledCard variant={'outlined'}>
+						<Row justify={'space-between'} align={'center'}>
+							<FlexRow>
+								<Box3>
+									{isImage(meta.value) ? (
+										<img
+											width={40}
+											height={40}
+											src={meta.value}
+										/>
+									) : (
+										<ImFilePdf
+											size={40}
+											color={'#FF505F'}
+										/>
+									)}
+								</Box3>
+								<Gutter gap={0.5} />
+								<FlexCol justify={'space-between'}>
+									<Typography variant={'subtitle2'}>
+										Attachment
+									</Typography>
+									<FlexRow>
+										<Typography variant={'caption'}>
+											{formatFileSize(2430)}
+										</Typography>
+										<Gutter gap={1} />
+										<Typography variant={'caption'}>
+											Completed
+										</Typography>
+									</FlexRow>
+								</FlexCol>
+							</FlexRow>
+							<FlexRow align={'center'}>
+								<Delete onClick={() => helpers.setValue('')} />
+								<Gutter gap={1} />
+								<MdCheckCircle color={'#178D46'} size={30} />
+							</FlexRow>
+						</Row>
+					</StyledCard>
+
 					{(tempFile.name || tempFile.url) && (
 						<StyledCard variant={'outlined'}>
 							<Row justify={'space-between'} align={'center'}>
 								<FlexRow>
 									<Box3
 										style={{
-											height: 56,
+											height: 40,
 											alignItems: 'center',
 											justifyContent: 'center'
 										}}
@@ -279,7 +252,7 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 									</Box3>
 									<Gutter gap={0.5} />
 									<FlexCol
-										style={{ height: 56 }}
+										style={{ height: 40 }}
 										justify={'space-between'}
 									>
 										<Typography>{`Attachment-${tempFile.name}.`}</Typography>
