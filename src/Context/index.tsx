@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useState
+} from 'react'
 import { App } from '../App'
 import type { PaletteOptions } from '@mui/material/styles/createPalette'
 import axios, { type AxiosInstance } from 'axios'
@@ -36,14 +42,16 @@ export const LMSProvider: React.FC<Props> = ({
 	const [Token, setToken] = useState(token)
 	const [userDetail, setUserDetail] = useState<IBusiness>()
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		try {
 			const { data } = await axiosInstance.get(
 				`/v1/external-lending/sme/users?email=${email}`
 			)
 			setUserDetail(data)
-		} catch (e: any) {}
-	}
+		} catch (e: any) {
+			//
+		}
+	}, [email])
 
 	const axiosInstance = axios.create({
 		baseURL: base_url,
@@ -61,13 +69,13 @@ export const LMSProvider: React.FC<Props> = ({
 			setEmail: (email: string) => setUserEmail(email),
 			userDetail: userDetail
 		}
-	}, [token, base_url, axiosInstance])
+	}, [Token, base_url, axiosInstance, email, userDetail])
 
 	useEffect(() => {
 		if (email) {
 			fetchData()
 		}
-	}, [email])
+	}, [email, fetchData])
 
 	return (
 		<LMSContext.Provider value={value}>

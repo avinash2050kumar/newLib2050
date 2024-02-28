@@ -56,38 +56,24 @@ const Row = styled(FlexCol)`
 
 type SummaryCardProps = {
 	onClick?(): void
-	info?: IBusiness
 }
 
 export const SummaryCard: React.ComponentType<SummaryCardProps> = ({
-	onClick,
-	info
+	onClick
 }) => {
-	const [loading, setLoading] = useState(true)
-	const [detail, setDetail] = useState<IBusiness | undefined>(info)
-	const { EMAIL, axiosInstance, userDetail } = useLMS()
+	const [detail, setDetail] = useState<IBusiness | undefined>(undefined)
+	const { EMAIL, userDetail } = useLMS()
 	const theme = useTheme()
 
-	const fetchDetail = () => {
-		if (userDetail === undefined) {
-		} else {
-			setDetail(userDetail)
-			setLoading(false)
-		}
-	}
-
 	useEffect(() => {
-		if (!info && EMAIL) {
-			fetchDetail()
-		} else if (!EMAIL) {
+		if (!EMAIL) {
 			enqueueSnackbar('Email is required', {
 				variant: 'error'
 			})
 		} else {
-			setDetail(info)
-			setLoading(false)
+			setDetail(userDetail)
 		}
-	}, [EMAIL, fetchDetail, info])
+	}, [EMAIL, userDetail])
 
 	return (
 		<Header>

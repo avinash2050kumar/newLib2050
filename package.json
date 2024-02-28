@@ -1,6 +1,6 @@
 {
   "name": "newlibs2050",
-  "version": "1.0.33",
+  "version": "1.0.38",
   "description": "newlibs2050",
   "main": "dist/index.umd.js",
   "module": "dist/index.mjs",

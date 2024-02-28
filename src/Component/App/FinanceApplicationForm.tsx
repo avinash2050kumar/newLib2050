@@ -67,7 +67,7 @@ const validationSchema = Yup.object().shape({
 type FinanceApplicationFormProps = {
 	loanId?: string
 	data?: LoanPost
-	onSuccess?(load: any): void
+	onSuccess?(loan: any): void
 }
 
 export const FinanceApplicationForm: React.ComponentType<
