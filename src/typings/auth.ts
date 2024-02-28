@@ -1,11 +1,6 @@
-
-
 export type AwsResponsePropS = {
-	signedRequest: string
-	url: string
-	uniqueFileName: string
-	expiresIn: {
-		amount: number
-		unit: string
-	}
+	contentType: string
+	getPreSignedURL: string
+	putPresignedURL: string
+	resourceURL: string
 }

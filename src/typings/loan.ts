@@ -130,6 +130,7 @@ export interface ILoan {
 	partner?: IPartnerSnapshot
 	disbursement_date?: string
 	principal_amount?: number
+	required_financing?: number
 	statuses?: StatusObject[]
 	status: FinanceAppState
 	type: LoanType

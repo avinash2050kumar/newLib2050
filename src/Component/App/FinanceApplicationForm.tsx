@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { FlexCol, FlexRow } from '../Flex'
 import { styled } from '@mui/system'
-import {
-	Button,
-	Card,
-	InputAdornment,
-	Typography,
-	useTheme
-} from '@mui/material'
+import { Button, Card, Typography, useTheme } from '@mui/material'
 import { Gutter } from '../Gutter'
 import { Formik } from 'formik'
 import type { PERDICTION } from '../../data'
@@ -199,14 +193,6 @@ export const FinanceApplicationForm: React.ComponentType<
 								size="small"
 								wrapperStyle={{ width: '100%' }}
 								style={{ width: '100%' }}
-								inputProps={{ style: { textAlign: 'end' } }}
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<Typography>PKR</Typography>
-										</InputAdornment>
-									)
-								}}
 								onBlur={e =>
 									calculateAmount(
 										(values?.tenure as string) || '0',
@@ -222,14 +208,6 @@ export const FinanceApplicationForm: React.ComponentType<
 								size="small"
 								wrapperStyle={{ width: '100%' }}
 								style={{ width: '100%' }}
-								inputProps={{ style: { textAlign: 'end' } }}
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<Typography>PKR</Typography>
-										</InputAdornment>
-									)
-								}}
 								onBlur={e =>
 									calculateAmount(
 										e,

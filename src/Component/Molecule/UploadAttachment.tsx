@@ -1,4 +1,10 @@
-import { Button, Card, CircularProgress, Typography } from '@mui/material'
+import {
+	Button,
+	Card,
+	CircularProgress,
+	Typography,
+	useTheme
+} from '@mui/material'
 import React, { useCallback, useState } from 'react'
 import { styled } from '@mui/system'
 import { useDropzone } from 'react-dropzone'
@@ -8,8 +14,6 @@ import { useAppErrors } from '../../hooks'
 import { useField } from 'formik'
 import { useSnackbar } from 'notistack'
 import { CompressImage } from '../../utils'
-import { uploadADoc } from '../../api'
-import { ImFilePdf } from 'react-icons/im'
 import { ErrorText } from '../Atoms'
 import { Gutter } from '../Gutter'
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined'
@@ -21,6 +25,8 @@ import {
 import { MdCheckCircle, MdDelete } from 'react-icons/md'
 import type { FileDto } from '../../typings/file'
 import { formatFileSize } from '../../helpers/filesize'
+import type { AwsResponsePropS } from '../../typings'
+import { useLMS } from '../../Context'
 
 const Wrapper = styled(FlexRow)`
 	width: 100%;
@@ -91,6 +97,8 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 	const [, meta, helpers] = useField(name)
 	const { setAppError } = useAppErrors()
 	const { enqueueSnackbar } = useSnackbar()
+	const theme = useTheme()
+	const { axiosInstance } = useLMS()
 
 	const error = meta.touched && meta.error
 
@@ -106,6 +114,21 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 		)
 	}
 
+	const uploadADoc = useCallback(
+		async (fileName: string) => {
+			try {
+				const { data } = await axiosInstance.get<AwsResponsePropS>(
+					`/v1/external-lending/sme/s3/presigned-url?file_name=${fileName}`
+				)
+
+				return data
+			} catch (error: any) {
+				throw error.response.data
+			}
+		},
+		[axiosInstance]
+	)
+
 	const onDrop = useCallback(
 		async (acceptedFiles: any) => {
 			try {
@@ -117,21 +140,19 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 					setLoading(true)
 					setTempFile({ url: '', name: selectedFile.name })
 
-					const data = await uploadADoc(
-						isImage ? 'png' : getExt,
-						isImage ? 'image' : 'application',
-						name
-					)
+					const data = await uploadADoc(selectedFile.name)
 					let res: any = undefined
 
 					if (isImage) {
 						res = await CompressImage(selectedFile)
 					}
 
+					console.log('se', selectedFile)
+
 					const reader = new FileReader()
 					reader.onload = async evt => {
 						await Axios.default
-							.put(data.signedRequest, evt.target?.result, {
+							.put(data.putPresignedURL, evt.target?.result, {
 								headers: {
 									'Content-Type': isImage
 										? res.type
@@ -142,9 +163,9 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 								helpers.setValue([
 									...meta.value,
 									{
-										name: 'name',
-										size: 2320,
-										resourceURL: data.url
+										name: selectedFile.name,
+										size: selectedFile.size,
+										resourceURL: data.putPresignedURL
 									}
 								])
 
@@ -154,11 +175,12 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 								setLoading(false)
 								setTempFile({ url: '', name: '' })
 							})
-							.catch(() => {
+							.catch((e: any) => {
 								enqueueSnackbar('Upload Failed', {
 									variant: 'error'
 								})
 								setLoading(false)
+								console.log(e, 'error')
 							})
 					}
 
@@ -171,7 +193,7 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 				setLoading(false)
 			}
 		},
-		[enqueueSnackbar, helpers, meta.value, name, setAppError]
+		[enqueueSnackbar, helpers, meta.value, setAppError, uploadADoc]
 	)
 
 	const { getRootProps, getInputProps } = useDropzone({
@@ -211,11 +233,11 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 			<Gutter spacing={0.5} />
 			<Wrapper>
 				<Flex>
-					{meta.value.map((m: FileDto, i: number) => (
+					{meta.value.map((m: FileDto) => (
 						<StyledCard variant={'outlined'} key={m.resourceURL}>
 							<Row justify={'space-between'} align={'center'}>
 								<FlexRow>
-									<Box3>
+									{/*<Box3>
 										{isImage(m.resourceURL) ? (
 											<img
 												width={56}
@@ -228,19 +250,29 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 												color={'#FF505F'}
 											/>
 										)}
-									</Box3>
-									<Gutter gap={0.5} />
+									</Box3>*/}
+									{/*<Gutter gap={0.5} />*/}
 									<FlexCol
-										style={{ height: 56 }}
+										//style={{ height: 56 }}
 										justify={'space-between'}
 									>
 										<Typography>{m.name}</Typography>
 										<FlexRow>
-											<Typography variant={'caption'}>
+											<Typography
+												variant={'caption'}
+												color={
+													theme.palette.grey['600']
+												}
+											>
 												{formatFileSize(m.size)}
 											</Typography>
 											<Gutter gap={1} />
-											<Typography variant={'caption'}>
+											<Typography
+												variant={'caption'}
+												color={
+													theme.palette.grey['600']
+												}
+											>
 												Completed
 											</Typography>
 										</FlexRow>
@@ -268,7 +300,7 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 						<StyledCard variant={'outlined'}>
 							<Row justify={'space-between'} align={'center'}>
 								<FlexRow>
-									<Box3
+									{/*<Box3
 										style={{
 											height: 56,
 											alignItems: 'center',
@@ -277,9 +309,9 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 									>
 										<CircularProgress />
 									</Box3>
-									<Gutter gap={0.5} />
+									<Gutter gap={0.5} />*/}
 									<FlexCol
-										style={{ height: 56 }}
+										//style={{ height: 56 }}
 										justify={'space-between'}
 									>
 										<Typography>{`Attachment-${tempFile.name}.`}</Typography>

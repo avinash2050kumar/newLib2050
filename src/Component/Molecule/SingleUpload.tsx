@@ -1,4 +1,10 @@
-import { Button, Card, CircularProgress, Typography } from '@mui/material'
+import {
+	Button,
+	Card,
+	CircularProgress,
+	Typography,
+	useTheme
+} from '@mui/material'
 import React, { useCallback, useState } from 'react'
 import { styled } from '@mui/system'
 import { useDropzone } from 'react-dropzone'
@@ -7,15 +13,15 @@ import * as Axios from 'axios'
 import { useAppErrors } from '../../hooks'
 import { useField } from 'formik'
 import { useSnackbar } from 'notistack'
-import { CompressImage } from '../../utils/image-compression'
-import { uploadADoc } from '../../api'
-import { ImFilePdf } from 'react-icons/im'
-import { ErrorText } from '../../Component/Atoms'
-import { Gutter } from '../../Component'
+import { CompressImage } from '../../utils'
+import { ErrorText } from '../Atoms'
+import { Gutter } from '../Gutter'
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined'
 import { getFileExtension, isImageFileExtension } from '../../helpers'
 import { MdCheckCircle, MdDelete } from 'react-icons/md'
 import { formatFileSize } from '../../helpers/filesize'
+import type { AwsResponsePropS } from '../../typings'
+import { useLMS } from '../../Context'
 
 const Wrapper = styled(FlexRow)`
 	width: 100%;
@@ -83,6 +89,8 @@ export const SingleUpload: React.ComponentType<Props> = ({
 	const [, meta, helpers] = useField(name)
 	const { setAppError } = useAppErrors()
 	const { enqueueSnackbar } = useSnackbar()
+	const theme = useTheme()
+	const { axiosInstance } = useLMS()
 
 	const error = meta.touched && meta.error
 
@@ -98,6 +106,21 @@ export const SingleUpload: React.ComponentType<Props> = ({
 		)
 	}
 
+	const uploadADoc = async (
+		//BUSINESS: string,
+		fileName: string
+	) => {
+		try {
+			const { data } = await axiosInstance.get<AwsResponsePropS>(
+				`/v1/external-lending/sme/s3/presigned-url?file_name=${fileName}`
+			)
+
+			return data
+		} catch (error: any) {
+			throw error.response.data
+		}
+	}
+
 	const onDrop = useCallback(
 		async (acceptedFiles: any) => {
 			try {
@@ -109,11 +132,7 @@ export const SingleUpload: React.ComponentType<Props> = ({
 					setLoading(true)
 					setTempFile({ url: '', name: selectedFile.name })
 
-					const data = await uploadADoc(
-						isImage ? 'png' : getExt,
-						isImage ? 'image' : 'application',
-						name
-					)
+					const data = await uploadADoc(selectedFile.name)
 					let res: any = undefined
 
 					if (isImage) {
@@ -123,7 +142,7 @@ export const SingleUpload: React.ComponentType<Props> = ({
 					const reader = new FileReader()
 					reader.onload = async evt => {
 						await Axios.default
-							.put(data.signedRequest, evt.target?.result, {
+							.put(data.putPresignedURL, evt.target?.result, {
 								headers: {
 									'Content-Type': isImage
 										? res.type
@@ -131,7 +150,7 @@ export const SingleUpload: React.ComponentType<Props> = ({
 								}
 							})
 							.then(() => {
-								helpers.setValue(data.url)
+								helpers.setValue(data.putPresignedURL)
 
 								enqueueSnackbar('Upload Successful', {
 									variant: 'success'
@@ -199,7 +218,7 @@ export const SingleUpload: React.ComponentType<Props> = ({
 					<StyledCard variant={'outlined'}>
 						<Row justify={'space-between'} align={'center'}>
 							<FlexRow>
-								<Box3>
+								{/*<Box3>
 									{isImage(meta.value) ? (
 										<img
 											width={40}
@@ -212,18 +231,24 @@ export const SingleUpload: React.ComponentType<Props> = ({
 											color={'#FF505F'}
 										/>
 									)}
-								</Box3>
-								<Gutter gap={0.5} />
+								</Box3>*/}
+								{/*<Gutter gap={0.5} />*/}
 								<FlexCol justify={'space-between'}>
 									<Typography variant={'subtitle2'}>
 										Attachment
 									</Typography>
 									<FlexRow>
-										<Typography variant={'caption'}>
+										<Typography
+											variant={'caption'}
+											color={theme.palette.grey['600']}
+										>
 											{formatFileSize(2430)}
 										</Typography>
 										<Gutter gap={1} />
-										<Typography variant={'caption'}>
+										<Typography
+											variant={'caption'}
+											color={theme.palette.grey['600']}
+										>
 											Completed
 										</Typography>
 									</FlexRow>
@@ -241,7 +266,7 @@ export const SingleUpload: React.ComponentType<Props> = ({
 						<StyledCard variant={'outlined'}>
 							<Row justify={'space-between'} align={'center'}>
 								<FlexRow>
-									<Box3
+									{/*<Box3
 										style={{
 											height: 40,
 											alignItems: 'center',
@@ -250,9 +275,9 @@ export const SingleUpload: React.ComponentType<Props> = ({
 									>
 										<CircularProgress />
 									</Box3>
-									<Gutter gap={0.5} />
+									<Gutter gap={0.5} />*/}
 									<FlexCol
-										style={{ height: 40 }}
+										//style={{ height: 40 }}
 										justify={'space-between'}
 									>
 										<Typography>{`Attachment-${tempFile.name}.`}</Typography>

@@ -74,13 +74,7 @@ export const getRegistrationFormInitialData = (data: IBusiness) => {
 }
 
 export const CREATE_LOAN = {
-	invoice_data: [
-		{
-			name: 'Avinash',
-			size: 4090,
-			resourceURL: 'https://www.pic2map.com/photos/thumbs/aitnms.jpg'
-		}
-	],
+	invoice_data: [],
 	required_financing: 0,
 	tenure: 0
 }
