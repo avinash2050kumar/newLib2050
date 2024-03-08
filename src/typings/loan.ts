@@ -83,16 +83,6 @@ export enum BusinessSegmentType {
 	MSME = 'msme'
 }
 
-export enum LOAN_REQUEST_TYPE {
-	TIJARAH = 'tijarah',
-	INVOICE = 'invoice'
-}
-
-export enum PaymentPlanType {
-	PAY_AS_YOU_GO = 'pay_as_you_go',
-	ONE_TIME_PAYMENT = 'one_time_payment'
-}
-
 export interface StatusObject {
 	status: FinanceAppState
 	updated_by: string

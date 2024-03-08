@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { FlexCol, FlexRow } from '../Flex'
 import { styled } from '@mui/system'
 import { Button, Card, Typography, useTheme } from '@mui/material'
@@ -13,6 +13,10 @@ import { useLMS } from '../../Context'
 import { FieldCurrencyInput } from '../Molecule/FieldCurrencyInput'
 import { enqueueSnackbar } from 'notistack'
 import type { LoanPost } from '../../typings/loan'
+import analytics from '../../utils/segment'
+import { SEGMENT_EVENTS } from '../../data/segmentEvents'
+import { arrayLength, removeArrays } from '../../helpers'
+import { PLATFORM } from '../../data/constant'
 
 const Wrapper = styled(FlexCol)`
 	padding: 16px;
@@ -95,7 +99,7 @@ export const FinanceApplicationForm: React.ComponentType<
 		}
 	}
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		try {
 			const { data } = await axiosInstance.get(
 				`/v1/external-lending/sme/users?email=${EMAIL}`
@@ -103,27 +107,28 @@ export const FinanceApplicationForm: React.ComponentType<
 		} catch (e: any) {
 			setAppError(e)
 		}
-	}
+	}, [])
 
 	useEffect(() => {
 		if (EMAIL) {
 			fetchData()
 		}
-	}, [])
+	}, [EMAIL, fetchData])
 
 	const onSubmit = async (value: any, action: any) => {
 		try {
 			action.setSubmitting(true)
+			const documentLength = arrayLength(value)
 
 			if (!data) {
-				const res = await axiosInstance.post(
+				const { data: response } = await axiosInstance.post(
 					'/v1/external-lending/sme/loans',
 					{
 						...value,
 						email: EMAIL
 					}
 				)
-				onSuccess?.(res.data)
+				onSuccess?.(response)
 				action.resetForm({
 					values: CREATE_LOAN
 				})
@@ -131,15 +136,23 @@ export const FinanceApplicationForm: React.ComponentType<
 				enqueueSnackbar('Successfully Submitted', {
 					variant: 'success'
 				})
+				analytics.track(
+					SEGMENT_EVENTS.COMPLETE_FINANCE_APPLICATION_FORM,
+					{
+						...removeArrays(value),
+						...PLATFORM,
+						attached_documents_count: documentLength
+					}
+				)
 			} else {
-				const res = await axiosInstance.patch(
+				const { data: response } = await axiosInstance.patch(
 					`/v1/external-lending/sme/loans/${loanId}`,
 					{
 						...value,
 						email: EMAIL
 					}
 				)
-				onSuccess?.(res.data)
+				onSuccess?.(response)
 				action.resetForm({
 					values: CREATE_LOAN
 				})
@@ -147,9 +160,17 @@ export const FinanceApplicationForm: React.ComponentType<
 				enqueueSnackbar('Successfully Submitted', {
 					variant: 'success'
 				})
+				analytics.track(
+					SEGMENT_EVENTS.COMPLETE_FINANCE_APPLICATION_FORM,
+					{
+						...removeArrays(value),
+						...PLATFORM,
+						attached_documents_count: documentLength
+					}
+				)
 			}
 		} catch (e: any) {
-			setAppError(e)
+			setAppError(e?.response?.data)
 		} finally {
 			action.setSubmitting(false)
 		}

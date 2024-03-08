@@ -25,7 +25,6 @@ const Button = styled(FlexCol)`
 export const RepaymentTable: React.ComponentType<{
 	dataSource: ILoanTransaction[]
 }> = ({ dataSource = [] }) => {
-	console.log(dataSource, 'dd334')
 	return (
 		<TableContainer component={Paper}>
 			<Table sx={{ minWidth: 650 }} aria-label="simple table">

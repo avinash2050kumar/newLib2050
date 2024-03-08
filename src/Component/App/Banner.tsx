@@ -64,7 +64,6 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 	onClose,
 	onClick
 }) => {
-	const [loading, setLoading] = useState(true)
 	const [detail, setDetail] = useState<IBusiness | undefined>()
 	const { EMAIL, userDetail } = useLMS()
 	const theme = useTheme()
@@ -186,7 +185,7 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 
 	return (
 		<>
-			{!loading && detail && (
+			{detail && (
 				<>
 					{!detail.kyb && !detail.user && (
 						<Render
@@ -216,17 +215,6 @@ export const Banner: React.ComponentType<OFHeaderProps> = ({
 								disabled={!status.contractUrl}
 							/>
 						)}
-					{/*{detail.kyb &&
-						status.contractValid &&
-						status.contractValid?.length > 0 && (
-							<Render
-								data={
-									BANNER_DATA()
-										.APPLY_FINANCING as BannerDataType
-								}
-								color={theme.palette.success}
-							/>
-						)}*/}
 					{detail.kyb && detail.kyb.status === 'rejected' && (
 						<Render
 							data={

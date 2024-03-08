@@ -1,21 +1,25 @@
-# NewLibs2050
-Introduction
-
+ 
+<span>Empower your platform with seamless financial integration using these White Label UI Components. Designed for easy customisation and seamless integration, our UI components offer:
+<br/><b>Customisation:</b> Tailor the look and feel to match your brand.<br/>
+<b>Modularity:</b> Choose functionalities that fit your needs.<br/>
+<b>Security:</b> Industry-leading standards to protect user data.<br/>
+<b>Scalability:</b> Reliable performance for any user load.<br/>
+Get started today with our developer-friendly APIs and comprehensive documentation!</span>
+<br/><br/><br/>
 Contact to our team for the WLC-design
 
 <h1>White Label Components</h1>
 These are the available white label components.
 
-- [RegisterFinance](#RegisterFinance)
-- [FinanceApplicationForm](#FinanceApplicationForm)
-- [RepaymentModal](#RepaymentModal)
-- [SummaryCard](#SummaryCard)
-- [LoanDetails](#LoanDetails)
+- [Register Finance](#RegisterFinance)
+- [Finance Application Form](#FinanceApplicationForm)
+- [Repayment Modal](#RepaymentModal)
+- [Summary Card](#SummaryCard)
+- [Loan Details](#LoanDetails)
 - [Banner](#Banner)
+- [Loan List](#LoanList)
 
-There are few hook available to use and modify the value at run times. see the doc below
-
-First install the React js sdk by running this command
+First install the React js sdk by running one of these command
 
 ```yarn add newlibs2050```
 
@@ -27,7 +31,7 @@ Or
 <br/>
 <br/>
 
-<h3> Configure</h3>
+<h3>Configure</h3>
 
 ```typescript jsx
 import React, { useCallback, useEffect, useState } from 'react'
@@ -51,7 +55,7 @@ function App() {
 			token={token}
 			email={/*provide the email address */}
 		>
-			{/* childred */}
+			{/* children */}
 		</LMSProvider>
 	)
 }
@@ -64,34 +68,39 @@ export default App
 Wrap your top level-component with LMSProvider.
 ```Note: White label component works inside LMSProvider```
 
-| Parameter       | Required? | Type              | Description                                                                                      |
-|-----------------|:---------:|-------------------|--------------------------------------------------------------------------------------------------|
-| base_url        |   true    | `string`          | Provide the base url or contact us                                                               |
-| token           |   true    | `string`          | Generate the token and pass it to the provider                                                   |
-| email           |   false   | `string`          | you can set email later using [useLMS()](#useLMS) hook but for now simply pass empty string(' ') |
-| theme        |   false   | `light` or `dark` | You can pass theme mode like light or dark                                                       |
-| palette     |   false   | `Theme palette`   | For more info see the [theme](#Theme) section                                                         |
+| Parameter       | Required? | Type              | Description                                                                                                              |
+|-----------------|:---------:|-------------------|--------------------------------------------------------------------------------------------------------------------------|
+| base_url        |   true    | `string`          | Provide the base url or contact us                                                                                       |
+| token           |   true    | `string`          | Generate the token and pass it to the LMSProvider                                                                        |
+| email           |   false   | `string`          | If you are new then simply pass emptyString(''). Later, you can modify the email address using [useLMS()](#useLMS) hook. |
+| theme        |   false   | `light` or `dark` | You can pass theme mode like light or dark                                                                               |
+| palette     |   false   | `Theme palette`   | For more info see the [theme](#Theme) section                                                                            |
 
-Now Configuration is done. You are free to use any white label component.
+Now Configuration is done. You are free to use any white label component if you business is already register.
 <br/>
 <br/>
 <br/>
 <br/>
 
 ## RegisterFinance
+
 ```typescript jsx
 import React, { useState } from 'react'
 import { RegisterFinance } from 'newlibs2050' 
 
 export const Component = () => {
-	return <RegisterFinance />
+	return <RegisterFinance onSuccess={(business: IBusiness) => console.log('business',business)} />
 }
 
 ```
 
-```Note: No props require for this component. ```
+It will help you to register your business information with us.
 
-It will help you to register your business or update your business information with us.
+| Parameter | Required? | Type       | Description                                                                        |
+|-----------|:---------:|------------|------------------------------------------------------------------------------------|
+| onSuccess |   false   | `function` | it will return business type object, once you successfully submitted your request. |
+
+
 
 <br/>
 <br/>
@@ -134,10 +143,12 @@ export const Component = () => {
 
 ```
 
-| Parameter   | Required? | Type      | Description                                                                    |
-|-------------|:---------:|-----------|--------------------------------------------------------------------------------|
-| loanId      |   true    | `string`  | once you receive the loan object get the loan id and pass it to this component |
-| onSuccess   |   false   | `function`| It will fire, whenever your request successfully saved with us.                |
+| Parameter | Required? | Type       | Description                                                                   |
+|-----------|:---------:|------------|-------------------------------------------------------------------------------|
+| loanId    |   true    | `string`   | once you receive the loan object get the loan id and pass it to this component |
+| onSuccess |   false   | `function` | It will fire, whenever your request successfully saved with us.               |
+| open      |   true    | `boolean`  | It will set the visibility of the modal                                       |
+| onClose   |   false   | `function` | It will trigger once user clicks on the close, cancel button                  |
 
 
 <br/>
@@ -181,10 +192,11 @@ export const Component = () => {
 	const {userDetail} = useLMS()
 	
 	return <LoanDetails
-                    loanId={'65d8c8034a5df5b079172dec'} // pass your loanId
-                    onClick={() => {
+                    loanId={'65d8c8034a5df5b079172dec'} // pass your loanId 
+                    onRecordClick={() => {
 						// do something
-                    }} 
+                    }}
+                    isRepayment={false}
                 />
 }
 
@@ -235,6 +247,39 @@ export const Component = () => {
 <br/>
 <br/>
 
+## LoanList
+```typescript jsx
+import React, { useState } from 'react'
+import { Banner } from 'newlibs2050' 
+
+export const Component = () => {
+	const {userDetail} = useLMS()
+	
+	return <LoanList onRecordPaymentClick={(loan) => {
+		                // it will return you selected loan
+	                 }} 
+                         onViewClick={(type, loan) => {
+						         // it will return you type : 'LOAN'|'APPLICATION' and selected loan detail
+                         }} 
+                         tableMaxHeight={300}
+                />
+}
+
+```
+
+
+| Parameter | Required? | Type       | Description                                                               |
+|-----------|:---------:|------------|---------------------------------------------------------------------------|
+| onRecordPaymentClick |   false   | `function` | It will return you selected loan                                          |
+| onViewClick |   false   | `function` | it will return you type : ```LOAN``` or ```APPLICATION``` and selected loan |
+| tableMaxHeight |   false   | `number`     | Table max height for both `Loan` and `Application`                        | 
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+
 ## Hooks
 ### useLMS()
 ```const { TOKEN, BASE_URL, axiosInstance, EMAIL, setEmail, userDetail } = useLMS()```
@@ -250,7 +295,7 @@ export const Component = () => {
 
 
 ## Theme
-Palette Format
+Default Palette
 ```typescript
 const palette = {
   primary: {

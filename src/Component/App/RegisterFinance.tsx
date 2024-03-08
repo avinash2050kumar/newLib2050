@@ -20,6 +20,7 @@ import {
 	getRegistrationFormInitialData
 } from '../../data'
 import {
+	arrayLength,
 	convertCamelCaseToTitleCase,
 	getArrayKeys,
 	phoneNumPatternForLogin,
@@ -32,6 +33,10 @@ import { FieldNumberInput, FieldTextInput } from '../Molecule'
 import { Label } from '../Atoms/Label'
 import { useLMS } from '../../Context'
 import { enqueueSnackbar } from 'notistack'
+import type { IBusiness } from '../../typings/business'
+import analytics from '../../utils/segment'
+import { SEGMENT_EVENTS } from '../../data/segmentEvents'
+import { PLATFORM } from '../../data/constant'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -97,7 +102,9 @@ const MenuProps = {
 
 const validationSchema = Yup.object().shape({
 	fullName: Yup.string().required('full name is required'),
-	email: Yup.string().required('email is required'),
+	email: Yup.string()
+		.email('valid email is required')
+		.required('email is required'),
 	businessName: Yup.string().required('Business Name is required'),
 	businessAddress: Yup.string().required('Business Address is required'),
 	ntn: Yup.string().required('NTN is required'),
@@ -191,32 +198,26 @@ const validationSchema = Yup.object().shape({
 	})
 })
 
-export const RegisterFinance = () => {
+export const RegisterFinance: React.ComponentType<{
+	onSuccess?(business: IBusiness): void
+}> = ({ onSuccess }) => {
 	const [loading, setLoading] = useState(true)
-	const { axiosInstance, EMAIL, userDetail } = useLMS()
+	const { axiosInstance, setEmail } = useLMS()
 	const theme = useTheme()
 	const { setAppError } = useAppErrors()
 
 	const initial = useMemo(() => {
-		let res
-		if (userDetail === undefined) {
-		} else {
-			res = userDetail.user.id
-				? getRegistrationFormInitialData(userDetail)
-				: {
-						...CBFS_INITIAL_DATA,
-						businessName: '',
-						email: '',
-						fullName: '',
-						phone: '',
-						businessAddress: '',
-						business: '',
-						contactNumber: ''
-					}
-			setLoading(false)
-			return res
+		const res = {
+			...CBFS_INITIAL_DATA,
+			businessName: '',
+			email: '',
+			fullName: '',
+			businessAddress: '',
+			contactNumber: ''
 		}
-	}, [userDetail])
+		setLoading(false)
+		return res
+	}, [])
 
 	/*const fetchData = async () => {
 		try {
@@ -247,7 +248,8 @@ export const RegisterFinance = () => {
 				...value,
 				contactNumber: '+92' + value.contactNumber
 			}
-			if (EMAIL) {
+			const documentLength = arrayLength(finalValue)
+			/*if (EMAIL) {
 				const { data } = await axiosInstance.patch(
 					'/v1/external-lending/sme/users',
 					finalValue
@@ -258,20 +260,27 @@ export const RegisterFinance = () => {
 				enqueueSnackbar('Successfully updated', {
 					variant: 'success'
 				})
-			} else {
-				const { data } = await axiosInstance.post(
-					'/v1/external-lending/sme/users',
-					finalValue
-				)
-				action.resetForm({
-					values: { ...getRegistrationFormInitialData(data) }
-				})
-				enqueueSnackbar('Successfully created', {
-					variant: 'success'
-				})
-			}
+			} else {*/
+			const { data }: { data: IBusiness } = await axiosInstance.post(
+				'/v1/external-lending/sme/users',
+				finalValue
+			)
+			onSuccess?.(data)
+			setEmail?.(data.user.email)
+			action.resetForm({
+				values: { ...getRegistrationFormInitialData(data) }
+			})
+			enqueueSnackbar('Successfully created', {
+				variant: 'success'
+			})
+			analytics.track(SEGMENT_EVENTS.COMPLETE_KYC_REGISTRATION, {
+				...removeArrays(finalValue),
+				...PLATFORM,
+				attached_documents_count: documentLength
+			})
+			/*}*/
 		} catch (e: any) {
-			setAppError(e)
+			setAppError(e?.response?.data)
 		} finally {
 			action.setSubmitting(false)
 		}
@@ -324,6 +333,12 @@ export const RegisterFinance = () => {
 												width: '100%'
 											}}
 											size="small"
+											onBlur={() =>
+												analytics.track(
+													SEGMENT_EVENTS.START_KYC_REGISTRATION,
+													{ ...PLATFORM }
+												)
+											}
 										/>
 
 										<FieldNumberInput
@@ -335,6 +350,7 @@ export const RegisterFinance = () => {
 												width: '100%'
 											}}
 											size="small"
+											inputProps={{ maxLength: 10 }}
 											InputProps={{
 												startAdornment: (
 													<Typography
@@ -436,6 +452,9 @@ export const RegisterFinance = () => {
 									/>
 									<Gutter spacing={1.5} />
 								</Col>
+								<Typography variant={'body1'} fontWeight={600}>
+									Bank Details
+								</Typography>
 								<FieldTextInput
 									title={'Bank Details'}
 									name="bankName"
@@ -454,7 +473,6 @@ export const RegisterFinance = () => {
 									style={{ width: '100%' }}
 								/>
 								<Gutter spacing={1.5} />
-
 								<Typography variant={'body1'} fontWeight={600}>
 									Upload Attachment
 								</Typography>

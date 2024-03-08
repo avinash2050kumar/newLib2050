@@ -147,8 +147,6 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 						res = await CompressImage(selectedFile)
 					}
 
-					console.log('se', selectedFile)
-
 					const reader = new FileReader()
 					reader.onload = async evt => {
 						await Axios.default
@@ -180,7 +178,6 @@ export const UploadAttachment: React.ComponentType<Props> = ({
 									variant: 'error'
 								})
 								setLoading(false)
-								console.log(e, 'error')
 							})
 					}
 

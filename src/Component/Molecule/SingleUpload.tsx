@@ -49,10 +49,6 @@ const StyledCard = styled(Card)`
 	align-items: center;
 `
 
-const Box3 = styled('div')`
-	height: min-content;
-`
-
 const VisuallyHiddenInput = styled('input')({
 	clip: 'rect(0 0 0 0)',
 	clipPath: 'inset(50%)',
@@ -94,32 +90,23 @@ export const SingleUpload: React.ComponentType<Props> = ({
 
 	const error = meta.touched && meta.error
 
-	const isImage = (url: string = '') => {
-		const urlParts = url.toString().split('.')
-		const lastPart = urlParts[urlParts.length - 1]
-		const Fext = lastPart.split('?')[0]
+	const uploadADoc = useCallback(
+		async (
+			//BUSINESS: string,
+			fileName: string
+		) => {
+			try {
+				const { data } = await axiosInstance.get<AwsResponsePropS>(
+					`/v1/external-lending/sme/s3/presigned-url?file_name=${fileName}`
+				)
 
-		return (
-			Fext.toLowerCase() === 'png' ||
-			Fext.toLowerCase() === 'jpeg' ||
-			Fext.toLowerCase() === 'jpg'
-		)
-	}
-
-	const uploadADoc = async (
-		//BUSINESS: string,
-		fileName: string
-	) => {
-		try {
-			const { data } = await axiosInstance.get<AwsResponsePropS>(
-				`/v1/external-lending/sme/s3/presigned-url?file_name=${fileName}`
-			)
-
-			return data
-		} catch (error: any) {
-			throw error.response.data
-		}
-	}
+				return data
+			} catch (error: any) {
+				throw error.response.data
+			}
+		},
+		[axiosInstance]
+	)
 
 	const onDrop = useCallback(
 		async (acceptedFiles: any) => {
@@ -175,7 +162,7 @@ export const SingleUpload: React.ComponentType<Props> = ({
 				setLoading(false)
 			}
 		},
-		[enqueueSnackbar, helpers, meta.value, name, setAppError]
+		[enqueueSnackbar, helpers, setAppError, uploadADoc]
 	)
 
 	const { getRootProps, getInputProps } = useDropzone({
@@ -215,52 +202,48 @@ export const SingleUpload: React.ComponentType<Props> = ({
 			<Gutter spacing={0.5} />
 			<Wrapper>
 				<Flex>
-					<StyledCard variant={'outlined'}>
-						<Row justify={'space-between'} align={'center'}>
-							<FlexRow>
-								{/*<Box3>
-									{isImage(meta.value) ? (
-										<img
-											width={40}
-											height={40}
-											src={meta.value}
-										/>
-									) : (
-										<ImFilePdf
-											size={40}
-											color={'#FF505F'}
-										/>
-									)}
-								</Box3>*/}
-								{/*<Gutter gap={0.5} />*/}
-								<FlexCol justify={'space-between'}>
-									<Typography variant={'subtitle2'}>
-										Attachment
-									</Typography>
-									<FlexRow>
-										<Typography
-											variant={'caption'}
-											color={theme.palette.grey['600']}
-										>
-											{formatFileSize(2430)}
+					{meta.value && (
+						<StyledCard variant={'outlined'}>
+							<Row justify={'space-between'} align={'center'}>
+								<FlexRow>
+									<FlexCol justify={'space-between'}>
+										<Typography variant={'subtitle2'}>
+											Attachment
 										</Typography>
-										<Gutter gap={1} />
-										<Typography
-											variant={'caption'}
-											color={theme.palette.grey['600']}
-										>
-											Completed
-										</Typography>
-									</FlexRow>
-								</FlexCol>
-							</FlexRow>
-							<FlexRow align={'center'}>
-								<Delete onClick={() => helpers.setValue('')} />
-								<Gutter gap={1} />
-								<MdCheckCircle color={'#178D46'} size={30} />
-							</FlexRow>
-						</Row>
-					</StyledCard>
+										<FlexRow>
+											<Typography
+												variant={'caption'}
+												color={
+													theme.palette.grey['600']
+												}
+											>
+												{formatFileSize(2430)}
+											</Typography>
+											<Gutter gap={1} />
+											<Typography
+												variant={'caption'}
+												color={
+													theme.palette.grey['600']
+												}
+											>
+												Completed
+											</Typography>
+										</FlexRow>
+									</FlexCol>
+								</FlexRow>
+								<FlexRow align={'center'}>
+									<Delete
+										onClick={() => helpers.setValue('')}
+									/>
+									<Gutter gap={1} />
+									<MdCheckCircle
+										color={'#178D46'}
+										size={30}
+									/>
+								</FlexRow>
+							</Row>
+						</StyledCard>
+					)}
 
 					{(tempFile.name || tempFile.url) && (
 						<StyledCard variant={'outlined'}>

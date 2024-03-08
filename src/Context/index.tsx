@@ -45,13 +45,13 @@ export const LMSProvider: React.FC<Props> = ({
 	const fetchData = useCallback(async () => {
 		try {
 			const { data } = await axiosInstance.get(
-				`/v1/external-lending/sme/users?email=${email}`
+				`/v1/external-lending/sme/users?email=${userEmail}`
 			)
 			setUserDetail(data)
 		} catch (e: any) {
 			//
 		}
-	}, [email])
+	}, [userEmail])
 
 	const axiosInstance = axios.create({
 		baseURL: base_url,
@@ -65,11 +65,11 @@ export const LMSProvider: React.FC<Props> = ({
 			TOKEN: Token,
 			BASE_URL: base_url,
 			axiosInstance: axiosInstance,
-			EMAIL: email,
+			EMAIL: userEmail,
 			setEmail: (email: string) => setUserEmail(email),
 			userDetail: userDetail
 		}
-	}, [Token, base_url, axiosInstance, email, userDetail])
+	}, [Token, base_url, axiosInstance, userEmail, userDetail])
 
 	useEffect(() => {
 		if (email) {
